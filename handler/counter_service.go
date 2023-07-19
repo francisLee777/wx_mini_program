@@ -1,4 +1,4 @@
-package service
+package handler
 
 import (
 	"encoding/json"
@@ -33,7 +33,6 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 // CounterHandler 计数器接口
 func CounterHandler(w http.ResponseWriter, r *http.Request) {
 	res := &JsonResult{}
-
 	if r.Method == http.MethodGet {
 		counter, err := getCurrentCounter()
 		if err != nil {
@@ -145,7 +144,6 @@ func getAction(r *http.Request) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("缺少 action 参数")
 	}
-
 	return action.(string), nil
 }
 
