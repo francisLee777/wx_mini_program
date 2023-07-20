@@ -26,7 +26,7 @@ func ListFoodMenu(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "绑定错误", err)
 		return
 	}
-	res.Data = req
+	res.Data = r.Header
 	msg, err := json.Marshal(res)
 	if err != nil {
 		fmt.Fprint(w, "内部错误", err)
