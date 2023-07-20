@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/", handler.IndexHandler)
 	http.HandleFunc("/api/count", handler.CounterHandler)
 	http.HandleFunc("/api/listFoodMenu", handler.ListFoodMenu)
+	http.HandleFunc("/api/orderFood", handler.PostFoodOrder)
 
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
