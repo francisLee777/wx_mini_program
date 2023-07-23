@@ -38,6 +38,7 @@ func GetUserPhoneNumber(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res.Data = string(body)
+	res.ErrorMsg = string(body)
 	msg, err = json.Marshal(res)
 	if err != nil {
 		fmt.Fprint(w, "内部错误", err)
