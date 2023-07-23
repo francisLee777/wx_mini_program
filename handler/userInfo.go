@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"wxcloudrun-golang/util"
 )
 
@@ -25,7 +26,9 @@ func GetUserPhoneNumber(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "内部错误", err)
 		return
 	}
-	httpResp, err := http.Post("https://api.weixin.qq.com/wxa/business/getuserphonenumber", "application/json", nil)
+	//decoder := json.
+	marshal, _ := json.Marshal(req)
+	httpResp, err := http.Post("https://api.weixin.qq.com/wxa/business/getuserphonenumber", "application/json", strings.NewReader(string(marshal)))
 	if err != nil {
 		return
 	}
