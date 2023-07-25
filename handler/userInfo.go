@@ -9,12 +9,6 @@ import (
 
 // GetUserInfo 获取用户信息： 目前是用户手动输入的昵称和头像
 func GetUserInfo(w http.ResponseWriter, r *http.Request) {
-	req := &FoodOrderItemReq{}
-	err := util.BindJson(r, req)
-	if err != nil {
-		fmt.Fprint(w, "绑定错误", err)
-		return
-	}
 	openId, err := util.GetOpenIdFromHeader(r)
 	if err != nil {
 		_, _ = fmt.Fprint(w, "没有登录", err)
@@ -31,12 +25,6 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 // SaveNickName 保存用户昵称
 func SaveNickName(w http.ResponseWriter, r *http.Request) {
-	req := &FoodOrderItemReq{}
-	err := util.BindJson(r, req)
-	if err != nil {
-		fmt.Fprint(w, "绑定错误", err)
-		return
-	}
 	openId, err := util.GetOpenIdFromHeader(r)
 	if err != nil {
 		_, _ = fmt.Fprint(w, "没有登录", err)
