@@ -24,7 +24,8 @@ func main() {
 	g.UseDB(gormDB)
 	// Generate struct `User` based on table `users`
 	table1 := g.GenerateModelAs("kitchen_order", "OrderDBModel")
-	g.ApplyBasic(table1)
+	table2 := g.GenerateModelAs("user_info", "UserInfoDBModel")
+	g.ApplyBasic(table1, table2)
 	// Generate the code
 	g.Execute()
 }

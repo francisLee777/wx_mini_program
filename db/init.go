@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"wxcloudrun-golang/db/dao/gen"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,6 +12,7 @@ import (
 )
 
 var dbInstance *gorm.DB
+var DB *gen.Query
 
 // Init 初始化数据库
 func Init() error {
@@ -49,7 +51,7 @@ func Init() error {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	dbInstance = db
-
+	DB = gen.Use(db)
 	fmt.Println("finish init mysql with ", source)
 	return nil
 }

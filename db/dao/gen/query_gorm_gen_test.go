@@ -78,6 +78,7 @@ func Test_WithContext(t *testing.T) {
 
 	for _, ctx := range []context.Context{
 		qCtx.OrderDBModel.UnderlyingDB().Statement.Context,
+		qCtx.UserInfoDBModel.UnderlyingDB().Statement.Context,
 	} {
 		if v := ctx.Value(key); v != value {
 			t.Errorf("get value from context fail, expect %q, got %q", value, v)

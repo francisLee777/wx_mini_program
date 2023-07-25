@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"wxcloudrun-golang/db"
@@ -9,14 +10,14 @@ import (
 
 func main() {
 	if err := db.Init(); err != nil {
-		//panic(fmt.Sprintf("mysql init failed with %+v", err))
+		panic(fmt.Sprintf("mysql init failed with %+v", err))
 	}
 	// 他妈的原生http好麻烦
 	http.HandleFunc("/", handler.IndexHandler)
 	http.HandleFunc("/api/count", handler.CounterHandler)
 	http.HandleFunc("/api/listFoodMenu", handler.ListFoodMenu)
 	http.HandleFunc("/api/orderFood", handler.PostFoodOrder)
-	http.HandleFunc("/api/getUserPhoneNumber", handler.GetUserPhoneNumber)
-
+	http.HandleFunc("/api/user/getUserInfo", handler.GetUserInfo)
+	http.HandleFunc("/api/user/saveNickName", handler.SaveNickName)
 	log.Fatal(http.ListenAndServe(":80", nil))
 }

@@ -1,49 +1,39 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"strings"
+	"wxcloudrun-golang/db"
 	"wxcloudrun-golang/util"
 )
 
-// GetUserPhoneNumber 获取用户手机号
-func GetUserPhoneNumber(w http.ResponseWriter, r *http.Request) {
-	res := &JsonResult{}
-	req := &struct {
-		Code string `json:"code"`
-	}{}
-	err := util.BindJson(r, req)
+// GetUserInfo 获取用户信息： 目前是用户手动输入的昵称和头像
+func GetUserInfo(w http.ResponseWriter, r *http.Request) {
+	openId, err := util.GetOpenIdFromHeader(r)
 	if err != nil {
-		fmt.Fprint(w, "绑定错误", err)
+		_, _ = fmt.Fprint(w, "没有登录", err)
 		return
 	}
-	res.Data = r.Header
-	msg, err := json.Marshal(res)
-	if err != nil {
-		fmt.Fprint(w, "内部错误", err)
-		return
-	}
-	//decoder := json.
-	marshal, _ := json.Marshal(req)
-	httpResp, err := http.Post("https://api.weixin.qq.com/wxa/business/getuserphonenumber", "application/json", strings.NewReader(string(marshal)))
+	q1 := db.DB.UserInfoDBModel
+	userInfo, err := q1.Where(q1.OpenID.Eq(openId)).First()
 	if err != nil {
 		return
 	}
-	defer httpResp.Body.Close()
-	body, err := io.ReadAll(httpResp.Body)
+	util.ReturnSuccessJSON(w, userInfo)
+}
+
+// SaveNickName 保存用户昵称
+func SaveNickName(w http.ResponseWriter, r *http.Request) {
+	openId, err := util.GetOpenIdFromHeader(r)
+	if err != nil {
+		_, _ = fmt.Fprint(w, "没有登录", err)
+		return
+	}
+	nickname := r.FormValue("nickname")
+	q1 := db.DB.UserInfoDBModel
+	_, err = q1.Where(q1.OpenID.Eq(openId)).Update(q1.UserNickName, nickname)
 	if err != nil {
 		return
 	}
-	res.Data = string(body)
-	res.ErrorMsg = string(marshal)
-	msg, err = json.Marshal(res)
-	if err != nil {
-		fmt.Fprint(w, "内部错误", err)
-		return
-	}
-	w.Header().Set("content-type", "application/json")
-	w.Write(msg)
+	util.ReturnSuccessJSON(w, nil)
 }

@@ -16,34 +16,39 @@ import (
 )
 
 var (
-	Q            = new(Query)
-	OrderDBModel *orderDBModel
+	Q               = new(Query)
+	OrderDBModel    *orderDBModel
+	UserInfoDBModel *userInfoDBModel
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	OrderDBModel = &Q.OrderDBModel
+	UserInfoDBModel = &Q.UserInfoDBModel
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:           db,
-		OrderDBModel: newOrderDBModel(db, opts...),
+		db:              db,
+		OrderDBModel:    newOrderDBModel(db, opts...),
+		UserInfoDBModel: newUserInfoDBModel(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	OrderDBModel orderDBModel
+	OrderDBModel    orderDBModel
+	UserInfoDBModel userInfoDBModel
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:           db,
-		OrderDBModel: q.OrderDBModel.clone(db),
+		db:              db,
+		OrderDBModel:    q.OrderDBModel.clone(db),
+		UserInfoDBModel: q.UserInfoDBModel.clone(db),
 	}
 }
 
@@ -57,18 +62,21 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:           db,
-		OrderDBModel: q.OrderDBModel.replaceDB(db),
+		db:              db,
+		OrderDBModel:    q.OrderDBModel.replaceDB(db),
+		UserInfoDBModel: q.UserInfoDBModel.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	OrderDBModel IOrderDBModelDo
+	OrderDBModel    IOrderDBModelDo
+	UserInfoDBModel IUserInfoDBModelDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		OrderDBModel: q.OrderDBModel.WithContext(ctx),
+		OrderDBModel:    q.OrderDBModel.WithContext(ctx),
+		UserInfoDBModel: q.UserInfoDBModel.WithContext(ctx),
 	}
 }
 
