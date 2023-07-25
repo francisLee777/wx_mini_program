@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"net/http"
 	"wxcloudrun-golang/db"
+	"wxcloudrun-golang/db/model"
 	"wxcloudrun-golang/util"
 )
 
@@ -16,10 +20,11 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	q1 := db.DB.UserInfoDBModel
 	userInfo, err := q1.Where(q1.OpenID.Eq(openId)).First()
-	if err != nil {
-		_, _ = fmt.Fprint(w, err)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
+	// 查不到时 userInfo 为空
 	util.ReturnSuccessJSON(w, userInfo)
 }
 
@@ -32,10 +37,14 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 	}
 	nickname := r.FormValue("nickname")
 	q1 := db.DB.UserInfoDBModel
-	_, err = q1.Where(q1.OpenID.Eq(openId)).Update(q1.UserNickName, nickname)
-	if err != nil {
-		_, _ = fmt.Fprint(w, err)
+	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.UserNickName.ColumnName().String()})}).
+		Create(&model.UserInfoDBModel{
+			OpenID:       openId,
+			UserNickName: nickname,
+		}); err != nil {
+		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
-	util.ReturnSuccessJSON(w, nil)
+	// 查不到时 userInfo 为空
+	util.ReturnSuccessJSON(w, nickname)
 }
