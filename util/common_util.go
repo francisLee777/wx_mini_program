@@ -22,8 +22,8 @@ func BindJson(r *http.Request, ptr interface{}) error {
 // GetOpenIdFromHeader 从Header里面获取微信 openId
 func GetOpenIdFromHeader(r *http.Request) (string, error) {
 	openId := r.Header.Get("X-Wx-Openid")
-	if openId != "" {
-		return "", fmt.Errorf("缺少openId2 %+v", r.Header["X-Wx-Openid"])
+	if openId == "" {
+		return "", fmt.Errorf("缺少openId")
 	}
 	return openId, nil
 }
