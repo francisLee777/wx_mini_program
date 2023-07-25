@@ -17,6 +17,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	q1 := db.DB.UserInfoDBModel
 	userInfo, err := q1.Where(q1.OpenID.Eq(openId)).First()
 	if err != nil {
+		_, _ = fmt.Fprint(w, err)
 		return
 	}
 	util.ReturnSuccessJSON(w, userInfo)
@@ -33,6 +34,7 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 	q1 := db.DB.UserInfoDBModel
 	_, err = q1.Where(q1.OpenID.Eq(openId)).Update(q1.UserNickName, nickname)
 	if err != nil {
+		_, _ = fmt.Fprint(w, err)
 		return
 	}
 	util.ReturnSuccessJSON(w, nil)

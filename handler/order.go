@@ -19,8 +19,8 @@ type FoodOrderItemReq struct {
 	UserId   string           `json:"user_id"` // 用户信息？
 }
 
-// PostFoodOrder 获取菜单列表接口
-func PostFoodOrder(w http.ResponseWriter, r *http.Request) {
+// OrderFood 获取菜单列表接口
+func OrderFood(w http.ResponseWriter, r *http.Request) {
 	res := &JsonResult{}
 	req := &FoodOrderItemReq{}
 	err := util.BindJson(r, req)
