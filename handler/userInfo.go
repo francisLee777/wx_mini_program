@@ -35,7 +35,10 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprint(w, "没有登录", err)
 		return
 	}
-	nickname := r.FormValue("nickname")
+	nickname := r.URL.Query().Get("nickname")
+	if nickname == "" {
+		_, _ = fmt.Fprint(w, "入参nickName缺失")
+	}
 	q1 := db.DB.UserInfoDBModel
 	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.UserNickName.ColumnName().String()})}).
 		Create(&model.UserInfoDBModel{
