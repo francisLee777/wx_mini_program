@@ -23,7 +23,7 @@ func BindJson(r *http.Request, ptr interface{}) error {
 func GetOpenIdFromHeader(r *http.Request) (string, error) {
 	openId := r.Header.Get("x-wx-openid")
 	if openId != "" {
-		return "", fmt.Errorf("缺少openId")
+		return "", fmt.Errorf("缺少openId %+v", r.Header)
 	}
 	return openId, nil
 }
