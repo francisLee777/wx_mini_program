@@ -6,7 +6,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/http"
-	"time"
 	"wxcloudrun-golang/db"
 	"wxcloudrun-golang/db/model"
 	"wxcloudrun-golang/util"
@@ -50,7 +49,6 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
-	time.Sleep(3 * time.Second)
 	// 查不到时 userInfo 为空
 	util.ReturnSuccessJSON(w, nickname)
 }
