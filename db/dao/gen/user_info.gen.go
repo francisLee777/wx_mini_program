@@ -34,6 +34,7 @@ func newUserInfoDBModel(db *gorm.DB, opts ...gen.DOOption) userInfoDBModel {
 	_userInfoDBModel.Status = field.NewInt32(tableName, "status")
 	_userInfoDBModel.CreateTime = field.NewTime(tableName, "create_time")
 	_userInfoDBModel.UpdateTime = field.NewTime(tableName, "update_time")
+	_userInfoDBModel.UserIconURL = field.NewString(tableName, "user_icon_url")
 
 	_userInfoDBModel.fillFieldMap()
 
@@ -51,6 +52,7 @@ type userInfoDBModel struct {
 	Status       field.Int32  // 1-正常状态  2-删号
 	CreateTime   field.Time   // 创建时间
 	UpdateTime   field.Time   // 最后更新时间
+	UserIconURL  field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -74,6 +76,7 @@ func (u *userInfoDBModel) updateTableName(table string) *userInfoDBModel {
 	u.Status = field.NewInt32(table, "status")
 	u.CreateTime = field.NewTime(table, "create_time")
 	u.UpdateTime = field.NewTime(table, "update_time")
+	u.UserIconURL = field.NewString(table, "user_icon_url")
 
 	u.fillFieldMap()
 
@@ -90,7 +93,7 @@ func (u *userInfoDBModel) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (u *userInfoDBModel) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 7)
+	u.fieldMap = make(map[string]field.Expr, 8)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["openId"] = u.OpenID
 	u.fieldMap["user_nickName"] = u.UserNickName
@@ -98,6 +101,7 @@ func (u *userInfoDBModel) fillFieldMap() {
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["create_time"] = u.CreateTime
 	u.fieldMap["update_time"] = u.UpdateTime
+	u.fieldMap["user_icon_url"] = u.UserIconURL
 }
 
 func (u userInfoDBModel) clone(db *gorm.DB) userInfoDBModel {

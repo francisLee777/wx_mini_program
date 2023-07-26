@@ -49,6 +49,29 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
-	// 查不到时 userInfo 为空
 	util.ReturnSuccessJSON(w, nickname)
+}
+
+// SaveIconURL 保存用户头像链接
+func SaveIconURL(w http.ResponseWriter, r *http.Request) {
+	openId, err := util.GetOpenIdFromHeader(r)
+	if err != nil {
+		_, _ = fmt.Fprint(w, "没有登录", err)
+		return
+	}
+	iconURL := r.URL.Query().Get("iconURL")
+	if iconURL == "" {
+		_, _ = fmt.Fprint(w, "入参iconURL缺失")
+		return
+	}
+	q1 := db.DB.UserInfoDBModel
+	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.UserIconURL.ColumnName().String()})}).
+		Create(&model.UserInfoDBModel{
+			OpenID:      openId,
+			UserIconURL: iconURL,
+		}); err != nil {
+		_, _ = fmt.Fprint(w, "数据库错误", err)
+		return
+	}
+	util.ReturnSuccessJSON(w, iconURL)
 }
