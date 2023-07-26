@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/http"
+	"time"
 	"wxcloudrun-golang/db"
 	"wxcloudrun-golang/db/model"
 	"wxcloudrun-golang/util"
@@ -38,6 +39,7 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 	nickname := r.URL.Query().Get("nickname")
 	if nickname == "" {
 		_, _ = fmt.Fprint(w, "入参nickName缺失")
+		return
 	}
 	q1 := db.DB.UserInfoDBModel
 	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.UserNickName.ColumnName().String()})}).
@@ -48,6 +50,7 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
+	time.Sleep(3 * time.Second)
 	// 查不到时 userInfo 为空
 	util.ReturnSuccessJSON(w, nickname)
 }
