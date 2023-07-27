@@ -35,21 +35,23 @@ func SaveNickName(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprint(w, "没有登录", err)
 		return
 	}
-	nickname := r.URL.Query().Get("nickname")
-	if nickname == "" {
-		_, _ = fmt.Fprint(w, "入参nickName缺失")
+	temp := struct {
+		NickName string `json:"nickName"`
+	}{}
+	if err = util.BindJson(r, &temp); err != nil || temp.NickName == "" {
+		_, _ = fmt.Fprint(w, "入参nickName缺失或者绑定失败", err)
 		return
 	}
 	q1 := db.DB.UserInfoDBModel
 	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.UserNickName.ColumnName().String()})}).
 		Create(&model.UserInfoDBModel{
 			OpenID:       openId,
-			UserNickName: nickname,
+			UserNickName: temp.NickName,
 		}); err != nil {
 		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
-	util.ReturnSuccessJSON(w, nickname)
+	util.ReturnSuccessJSON(w, temp.NickName)
 }
 
 // SaveIconURL 保存用户头像链接
