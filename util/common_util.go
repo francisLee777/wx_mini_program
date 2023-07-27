@@ -3,7 +3,10 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/bytedance/sonic"
+	"math/rand"
 	"net/http"
+	"strings"
 )
 
 // JsonResult 返回结构
@@ -33,4 +36,17 @@ func ReturnSuccessJSON(w http.ResponseWriter, res interface{}) {
 	w.Header().Set("content-type", "application/json")
 	marshal, _ := json.Marshal(JsonResult{Data: res})
 	_, _ = w.Write(marshal)
+}
+
+// GenerateUUID 生成 UUID
+func GenerateUUID() string {
+	uuid := rand.Intn(1000000000)
+	uuidStr := fmt.Sprintf("%d", uuid)
+	// 将 UUID 转换为字符串，并去掉其中的空格和连字符
+	return strings.ReplaceAll(uuidStr, "-", "")
+}
+
+func Convert2JSONString(int interface{}) string {
+	str, _ := sonic.MarshalString(int)
+	return str
 }

@@ -30,11 +30,10 @@ func newUserInfoDBModel(db *gorm.DB, opts ...gen.DOOption) userInfoDBModel {
 	_userInfoDBModel.ID = field.NewInt64(tableName, "id")
 	_userInfoDBModel.OpenID = field.NewString(tableName, "openId")
 	_userInfoDBModel.UserNickName = field.NewString(tableName, "user_nickName")
-	_userInfoDBModel.UserIcon = field.NewBytes(tableName, "user_icon")
+	_userInfoDBModel.UserIconURL = field.NewString(tableName, "user_icon_url")
 	_userInfoDBModel.Status = field.NewInt32(tableName, "status")
 	_userInfoDBModel.CreateTime = field.NewTime(tableName, "create_time")
 	_userInfoDBModel.UpdateTime = field.NewTime(tableName, "update_time")
-	_userInfoDBModel.UserIconURL = field.NewString(tableName, "user_icon_url")
 
 	_userInfoDBModel.fillFieldMap()
 
@@ -48,11 +47,10 @@ type userInfoDBModel struct {
 	ID           field.Int64  // 自增id
 	OpenID       field.String // 微信提供的openId
 	UserNickName field.String // 创建人name
-	UserIcon     field.Bytes  // 暴力存储头像文件
+	UserIconURL  field.String // 头像url
 	Status       field.Int32  // 1-正常状态  2-删号
 	CreateTime   field.Time   // 创建时间
 	UpdateTime   field.Time   // 最后更新时间
-	UserIconURL  field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -72,11 +70,10 @@ func (u *userInfoDBModel) updateTableName(table string) *userInfoDBModel {
 	u.ID = field.NewInt64(table, "id")
 	u.OpenID = field.NewString(table, "openId")
 	u.UserNickName = field.NewString(table, "user_nickName")
-	u.UserIcon = field.NewBytes(table, "user_icon")
+	u.UserIconURL = field.NewString(table, "user_icon_url")
 	u.Status = field.NewInt32(table, "status")
 	u.CreateTime = field.NewTime(table, "create_time")
 	u.UpdateTime = field.NewTime(table, "update_time")
-	u.UserIconURL = field.NewString(table, "user_icon_url")
 
 	u.fillFieldMap()
 
@@ -93,15 +90,14 @@ func (u *userInfoDBModel) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (u *userInfoDBModel) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 8)
+	u.fieldMap = make(map[string]field.Expr, 7)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["openId"] = u.OpenID
 	u.fieldMap["user_nickName"] = u.UserNickName
-	u.fieldMap["user_icon"] = u.UserIcon
+	u.fieldMap["user_icon_url"] = u.UserIconURL
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["create_time"] = u.CreateTime
 	u.fieldMap["update_time"] = u.UpdateTime
-	u.fieldMap["user_icon_url"] = u.UserIconURL
 }
 
 func (u userInfoDBModel) clone(db *gorm.DB) userInfoDBModel {

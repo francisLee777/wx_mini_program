@@ -3,12 +3,15 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 	"wxcloudrun-golang/db"
 	"wxcloudrun-golang/handler"
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	if err := db.Init(); err != nil {
 		panic(fmt.Sprintf("mysql init failed with %+v", err))
 	}

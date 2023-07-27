@@ -29,11 +29,11 @@ func newOrderDBModel(db *gorm.DB, opts ...gen.DOOption) orderDBModel {
 	_orderDBModel.ALL = field.NewAsterisk(tableName)
 	_orderDBModel.ID = field.NewInt64(tableName, "id")
 	_orderDBModel.UniqueCode = field.NewString(tableName, "unique_code")
-	_orderDBModel.CreateID = field.NewString(tableName, "create_id")
+	_orderDBModel.OpenID = field.NewString(tableName, "openId")
 	_orderDBModel.CreateName = field.NewString(tableName, "create_name")
 	_orderDBModel.Info = field.NewString(tableName, "info")
 	_orderDBModel.Status = field.NewInt32(tableName, "status")
-	_orderDBModel.TargetTime = field.NewTime(tableName, "target_time")
+	_orderDBModel.TargetPeriod = field.NewString(tableName, "target_period")
 	_orderDBModel.Extra = field.NewString(tableName, "extra")
 	_orderDBModel.CreateTime = field.NewTime(tableName, "create_time")
 	_orderDBModel.UpdateTime = field.NewTime(tableName, "update_time")
@@ -46,17 +46,17 @@ func newOrderDBModel(db *gorm.DB, opts ...gen.DOOption) orderDBModel {
 type orderDBModel struct {
 	orderDBModelDo
 
-	ALL        field.Asterisk
-	ID         field.Int64  // 自增id
-	UniqueCode field.String // 订单号[全局唯一]
-	CreateID   field.String // 创建人id
-	CreateName field.String // 创建人name
-	Info       field.String // 订单内容，暂时不做索引直接怼进去
-	Status     field.Int32  // 订单状态， 1-新建[提单]  2-已支付
-	TargetTime field.Time   // 订单的目标时间[精确到分钟]
-	Extra      field.String // 扩展字段
-	CreateTime field.Time   // 创建时间
-	UpdateTime field.Time   // 最后更新时间
+	ALL          field.Asterisk
+	ID           field.Int64  // 自增id
+	UniqueCode   field.String // 订单号[全局唯一]
+	OpenID       field.String // 创建人id
+	CreateName   field.String // 创建人name
+	Info         field.String // 订单内容，暂时不做索引直接怼进去
+	Status       field.Int32  // 订单状态， 1-新建[提单]  2-已支付
+	TargetPeriod field.String // 订餐的目标时间，取值只有9个,已校验.明天中午、后天早上、今天晚上等
+	Extra        field.String // 扩展字段
+	CreateTime   field.Time   // 创建时间
+	UpdateTime   field.Time   // 最后更新时间
 
 	fieldMap map[string]field.Expr
 }
@@ -75,11 +75,11 @@ func (o *orderDBModel) updateTableName(table string) *orderDBModel {
 	o.ALL = field.NewAsterisk(table)
 	o.ID = field.NewInt64(table, "id")
 	o.UniqueCode = field.NewString(table, "unique_code")
-	o.CreateID = field.NewString(table, "create_id")
+	o.OpenID = field.NewString(table, "openId")
 	o.CreateName = field.NewString(table, "create_name")
 	o.Info = field.NewString(table, "info")
 	o.Status = field.NewInt32(table, "status")
-	o.TargetTime = field.NewTime(table, "target_time")
+	o.TargetPeriod = field.NewString(table, "target_period")
 	o.Extra = field.NewString(table, "extra")
 	o.CreateTime = field.NewTime(table, "create_time")
 	o.UpdateTime = field.NewTime(table, "update_time")
@@ -102,11 +102,11 @@ func (o *orderDBModel) fillFieldMap() {
 	o.fieldMap = make(map[string]field.Expr, 10)
 	o.fieldMap["id"] = o.ID
 	o.fieldMap["unique_code"] = o.UniqueCode
-	o.fieldMap["create_id"] = o.CreateID
+	o.fieldMap["openId"] = o.OpenID
 	o.fieldMap["create_name"] = o.CreateName
 	o.fieldMap["info"] = o.Info
 	o.fieldMap["status"] = o.Status
-	o.fieldMap["target_time"] = o.TargetTime
+	o.fieldMap["target_period"] = o.TargetPeriod
 	o.fieldMap["extra"] = o.Extra
 	o.fieldMap["create_time"] = o.CreateTime
 	o.fieldMap["update_time"] = o.UpdateTime
