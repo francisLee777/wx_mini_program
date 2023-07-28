@@ -2,14 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"github.com/bytedance/sonic"
 	"gorm.io/gorm/clause"
 	"net/http"
 	"wxcloudrun-golang/db"
 	"wxcloudrun-golang/db/model"
 	"wxcloudrun-golang/util"
 )
-
-// 订单处理
 
 type FoodOrderItem struct {
 	FoodMenuItem
@@ -20,6 +19,15 @@ type FoodOrderItemReq struct {
 	FoodList     []*FoodOrderItem `json:"food_list"`
 	OpenId       string           `json:"open_id"`       // 用户信息
 	TargetPeriod string           `json:"target_period"` // 订餐的目标时间，取值只有9个，前端已校验， 明天中午、后天早上、今天晚上等
+}
+
+type OrderQueryResp struct {
+	OrderList []*OrderItem `json:"order_list"`
+}
+
+type OrderItem struct {
+	FoodList     []*FoodOrderItem `json:"food_list"`
+	TargetPeriod string           `json:"target_period"`
 }
 
 // OrderFood 提交点餐订单
@@ -48,4 +56,28 @@ func OrderFood(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	util.ReturnSuccessJSON(w, "成功保存/覆写订单")
+}
+
+// GetMyOrder 获取已有订单
+func GetMyOrder(w http.ResponseWriter, r *http.Request) {
+	openId, err := util.GetOpenIdFromHeader(r)
+	if err != nil {
+		_, _ = fmt.Fprint(w, "没有登录", err)
+		return
+	}
+	q1 := db.DB.OrderDBModel
+	orderModelList, err := q1.Where(q1.OpenID.Eq(openId)).Find()
+	if err != nil {
+		return
+	}
+	resp := OrderQueryResp{}
+	for _, pojo := range orderModelList {
+		var itemList []*FoodOrderItem
+		_ = sonic.UnmarshalString(pojo.Info, &itemList)
+		resp.OrderList = append(resp.OrderList, &OrderItem{
+			FoodList:     itemList,
+			TargetPeriod: pojo.TargetPeriod,
+		})
+	}
+	util.ReturnSuccessJSON(w, resp)
 }
