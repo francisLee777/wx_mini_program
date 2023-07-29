@@ -18,7 +18,8 @@ type FoodOrderItem struct {
 type FoodOrderItemReq struct {
 	FoodList     []*FoodOrderItem `json:"food_list"`
 	OpenId       string           `json:"open_id"`       // 用户信息
-	TargetPeriod string           `json:"target_period"` // 订餐的目标时间，取值只有9个，前端已校验， 明天中午、后天早上、今天晚上等
+	TargetPeriod string           `json:"target_period"` // 订餐的目标时间，取值只有9个，前端已校验， 明天中午、后天早上、今天晚上
+	Extra        string           `json:"extra"`         // 订单备注
 }
 
 type OrderQueryResp struct {
@@ -28,6 +29,7 @@ type OrderQueryResp struct {
 type OrderItem struct {
 	FoodList     []*FoodOrderItem `json:"food_list"`
 	TargetPeriod string           `json:"target_period"`
+	Extra        string           `json:"extra"` // 订单备注
 }
 
 // OrderFood 提交点餐订单
@@ -46,12 +48,13 @@ func OrderFood(w http.ResponseWriter, r *http.Request) {
 	req.OpenId = openId
 	q1 := db.DB.OrderDBModel
 	// 冲突的话只更新订单内容
-	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.Info.ColumnName().String()})}).Create(&model.OrderDBModel{
-		OpenID:       openId,
-		UniqueCode:   util.GenerateUUID(),
-		TargetPeriod: req.TargetPeriod,
-		Info:         util.Convert2JSONString(req.FoodList),
-	}); err != nil {
+	if err = q1.Clauses(clause.OnConflict{DoUpdates: clause.AssignmentColumns([]string{q1.Info.ColumnName().String(), q1.Extra.ColumnName().String()})}).
+		Create(&model.OrderDBModel{
+			OpenID:       openId,
+			UniqueCode:   util.GenerateUUID(),
+			TargetPeriod: req.TargetPeriod,
+			Info:         util.Convert2JSONString(req.FoodList),
+		}); err != nil {
 		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
 	}
@@ -77,6 +80,7 @@ func GetMyOrder(w http.ResponseWriter, r *http.Request) {
 		resp.OrderList = append(resp.OrderList, &OrderItem{
 			FoodList:     itemList,
 			TargetPeriod: pojo.TargetPeriod,
+			Extra:        pojo.Extra,
 		})
 	}
 	util.ReturnSuccessJSON(w, resp)
