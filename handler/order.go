@@ -54,6 +54,7 @@ func OrderFood(w http.ResponseWriter, r *http.Request) {
 			UniqueCode:   util.GenerateUUID(),
 			TargetPeriod: req.TargetPeriod,
 			Info:         util.Convert2JSONString(req.FoodList),
+			Extra:        req.Extra,
 		}); err != nil {
 		_, _ = fmt.Fprint(w, "数据库错误", err)
 		return
